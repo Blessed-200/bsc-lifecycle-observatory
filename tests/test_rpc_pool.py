@@ -1,4 +1,5 @@
 """Contract tests for rotating read-only BSC RPC transport (no network access)."""
+
 from __future__ import annotations
 
 import asyncio
