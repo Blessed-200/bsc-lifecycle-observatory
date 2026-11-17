@@ -1,0 +1,34 @@
+name: Verify public wallet data sources
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: bsc-source-check
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.repository == 'Blessed-200/bsc-lifecycle-observatory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: src
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - run: pip install --require-hashes -r requirements.txt
+      - name: Probe a read-only copy of the collector state
+        run: python -m bsc_lifecycle.wallet_sources --repo "$GITHUB_REPOSITORY" --out source-proof
+      - name: Preserve source proof permanently
+        if: always()
+        run: |
+          tag="wallet-sources-$GITHUB_RUN_ID"
+          sha256sum source-proof/source-probe.tar.gz > source-proof/source-probe.sha256
+          gh release create "$tag" source-proof/source-probe.tar.gz source-proof/source-probe.sha256 \
+            --repo "$GITHUB_REPOSITORY" --title 'Public wallet source connectivity proof' \
+            --notes 'Raw anonymous source reads. No outcomes evaluated, no wallet connected, collector cursor unchanged.'

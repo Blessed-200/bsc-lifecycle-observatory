@@ -9,6 +9,7 @@ from typing import Any
 from bsc_lifecycle.codec import HASH
 from bsc_lifecycle.network import Oversize, Reader, ReadError
 from bsc_lifecycle.store import Journal, Store, encoded, sha
+from bsc_lifecycle.wallet_sources import collect as collect_wallet_sources
 
 
 class IntegrityError(Exception):
@@ -183,6 +184,7 @@ class Collector:
                 break  # Do not mark unattempted tokens as examined when the provider fails.
             with self.store.db:
                 self.store.db.execute("UPDATE tokens SET security_at=? WHERE address=?", (now, token))
+        await collect_wallet_sources(self.store, self.journal, self.reader)
         self.journal.flush()
 
     async def cycle(self) -> None:
