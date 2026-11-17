@@ -62,8 +62,8 @@ class RPCPool:
         base_backoff_sec: float = 1.0,
         max_backoff_sec: float = 60.0,
     ) -> None:
-        if not urls or len(set(urls)) != len(urls):
-            raise ValueError("RPC endpoints must be nonempty and distinct")
+        if len(urls) < 3 or len(set(urls)) != len(urls):
+            raise ValueError("at least 3 distinct RPC endpoints required")
         for url in urls:
             parts = urlsplit(url)
             if parts.scheme != "https" or not parts.hostname or parts.username or parts.password:
