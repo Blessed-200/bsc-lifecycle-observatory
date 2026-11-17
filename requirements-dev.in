@@ -1,0 +1,8 @@
+-r requirements.in
+ruff==0.17.5
+mypy==2.4.1
+pytest==9.2.0
+pytest-cov==7.1.0
+pip-audit==2.10.1
+setuptools==84.2.1
+wheel==0.48.0

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "registered_at_utc": "2026-11-17T02:43:35Z",
+  "purpose": "Prospective raw collection; no economic hypothesis is tested or promoted here. Development probes are labelled separately.",
+  "chain_id": 56,
+  "discovery": "Every emitted log from the six documented contracts; no return, liquidity, age, popularity or survival filter. Canonical Pancake V2/V3 factories identify pools. Classic Four V2 only; OpenFour and Infinity are not claimed covered.",
+  "tracking": "All logs of every observed non-core token and canonical pool, from its first-observed block; creator and birth known only when the corresponding creation event was captured. No silent removal of inactive tokens.",
+  "raw": "Original response bytes base64-encoded, request parameters, receipt time, HTTP status, explicit truncation; no captured session credentials.",
+  "time": "Block timestamp and receipt timestamp remain separate. Historical catch-up is not treated as live information. No interpolation of missing external snapshots.",
+  "enrichment": "DexScreener and GoPlus public batch reads; missing/restricted data stays unknown. Provider reports and transfer-event balances are not execution proofs.",
+  "fixed_protocols": "src/bsc_lifecycle/contracts.json",
+  "persistence": "Immutable daily GitHub release archives; verified download and all file digests before CAS checkpoint head; restart from saved cursor. Archives have no Actions artifact expiration.",
+  "sampling": "Protocol scans every cycle; token/pool streams round robin; external snapshot targets 60s young, 300s mid-age and 1800s older when capacity permits. Actual delays and cursors are measured.",
+  "excluded_core_token_addresses": [
+    "0x0000000000000000000000000000000000000000",
+    "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "0x55d398326f99059ff775485246999027b3197955",
+    "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+  ],
+  "capital_enabled": false,
+  "outcome_evaluation": "No full-life, daily-profit, fraud, low-ruin or optimal-stake claims. Strategy registration, chronological split and single blind evaluation are separate future requirements."
+}

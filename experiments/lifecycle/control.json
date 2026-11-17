@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "trading_enabled": false,
+  "purpose": "Public read-only data collection for strategy research"
+}

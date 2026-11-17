@@ -1,0 +1,61 @@
+name: BSC lifecycle collection
+on:
+  schedule:
+    - cron: '23 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: 'Bounded session length; next session defaults to 175 minutes'
+        default: '175'
+        type: string
+      bootstrap:
+        description: 'Explicit first initialization only; never reset existing history'
+        default: false
+        type: boolean
+      continue:
+        description: 'Dispatch the next bounded session after verified persistence'
+        default: true
+        type: boolean
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: bsc-lifecycle
+  cancel-in-progress: false
+jobs:
+  census:
+    # The research repository stays private. Continuous compute runs only in its clean public sibling.
+    if: github.repository == 'Blessed-200/bsc-lifecycle-observatory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+    env:
+      PYTHONPATH: src
+      GH_TOKEN: ${{ github.token }}
+      MINUTES: ${{ inputs.minutes || '175' }}
+      BOOTSTRAP: ${{ inputs.bootstrap || false }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install --require-hashes -r requirements.txt
+      - name: Read collection switch
+        id: switch
+        run: |
+          enabled=$(python -c 'import json; print(str(json.load(open("experiments/lifecycle/control.json"))["enabled"]).lower())')
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+      - name: Restore, collect and permanently archive
+        if: steps.switch.outputs.enabled == 'true'
+        run: |
+          args=()
+          if [ "$BOOTSTRAP" = true ]; then args+=(--bootstrap); fi
+          python -m bsc_lifecycle --out lifecycle-state --minutes "$MINUTES" \
+            --archive-repo "$GITHUB_REPOSITORY" "${args[@]}"
+      - name: Continue after verified checkpoint
+        if: success() && steps.switch.outputs.enabled == 'true' && (github.event_name == 'schedule' || inputs.continue)
+        run: |
+          gh workflow run lifecycle.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f bootstrap=false -f minutes=175 -f continue=true

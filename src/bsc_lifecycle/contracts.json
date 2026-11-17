@@ -1,0 +1,908 @@
+{
+  "version": 1,
+  "chain_id": 56,
+  "contracts": {
+    "four_v2": "0x5c952063c7fc8610ffdb798152d69f0b9550762b",
+    "flap_curve": "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0",
+    "flap_vault": "0x90497450f2a706f1951b5bdda52b4e5d16f34c06",
+    "flap_direct": "0x000042108465206185a077edc3f3fd2b49060000",
+    "pancake_v2_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "pancake_v3_factory": "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865"
+  },
+  "events": [
+    {
+      "name": "TokenCreate",
+      "signature": "TokenCreate(address,address,uint256,string,string,uint256,uint256,uint256)",
+      "topic": "0x396d5e902b675b032348d3d2e9517ee8f0c4a926603fbc075d3d282ff00cad20",
+      "sources": [
+        "four_v2"
+      ],
+      "fields": [
+        [
+          "creator",
+          "address",
+          false
+        ],
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "requestId",
+          "uint256",
+          false
+        ],
+        [
+          "name",
+          "string",
+          false
+        ],
+        [
+          "symbol",
+          "string",
+          false
+        ],
+        [
+          "totalSupply",
+          "uint256",
+          false
+        ],
+        [
+          "launchTime",
+          "uint256",
+          false
+        ],
+        [
+          "launchFee",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenPurchase",
+      "signature": "TokenPurchase(address,address,uint256,uint256,uint256,uint256,uint256,uint256)",
+      "topic": "0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942",
+      "sources": [
+        "four_v2"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "account",
+          "address",
+          false
+        ],
+        [
+          "price",
+          "uint256",
+          false
+        ],
+        [
+          "amount",
+          "uint256",
+          false
+        ],
+        [
+          "cost",
+          "uint256",
+          false
+        ],
+        [
+          "fee",
+          "uint256",
+          false
+        ],
+        [
+          "offers",
+          "uint256",
+          false
+        ],
+        [
+          "funds",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenSale",
+      "signature": "TokenSale(address,address,uint256,uint256,uint256,uint256,uint256,uint256)",
+      "topic": "0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19",
+      "sources": [
+        "four_v2"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "account",
+          "address",
+          false
+        ],
+        [
+          "price",
+          "uint256",
+          false
+        ],
+        [
+          "amount",
+          "uint256",
+          false
+        ],
+        [
+          "cost",
+          "uint256",
+          false
+        ],
+        [
+          "fee",
+          "uint256",
+          false
+        ],
+        [
+          "offers",
+          "uint256",
+          false
+        ],
+        [
+          "funds",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TradeStop",
+      "signature": "TradeStop(address)",
+      "topic": "0x8f9ab4bd7eff0d085f91575d50cd83f97aa5258e24ded7630d4fd6739e857132",
+      "sources": [
+        "four_v2"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "LiquidityAdded",
+      "signature": "LiquidityAdded(address,uint256,address,uint256)",
+      "topic": "0xc18aa71171b358b706fe3dd345299685ba21a5316c66ffa9e319268b033c44b0",
+      "sources": [
+        "four_v2"
+      ],
+      "fields": [
+        [
+          "base",
+          "address",
+          false
+        ],
+        [
+          "offers",
+          "uint256",
+          false
+        ],
+        [
+          "quote",
+          "address",
+          false
+        ],
+        [
+          "funds",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenCreated",
+      "signature": "TokenCreated(uint256,address,uint256,address,string,string,string)",
+      "topic": "0x504e7f360b2e5fe33cbaaae4c593bc55305328341bf79009e43e0e3b7f699603",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "ts",
+          "uint256",
+          false
+        ],
+        [
+          "creator",
+          "address",
+          false
+        ],
+        [
+          "nonce",
+          "uint256",
+          false
+        ],
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "name",
+          "string",
+          false
+        ],
+        [
+          "symbol",
+          "string",
+          false
+        ],
+        [
+          "meta",
+          "string",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenBought",
+      "signature": "TokenBought(uint256,address,address,uint256,uint256,uint256,uint256)",
+      "topic": "0xa800a2038683844fac66747f771bfdfae862eb28b16bcfa387afa9fbacce8ff7",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "ts",
+          "uint256",
+          false
+        ],
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "buyer",
+          "address",
+          false
+        ],
+        [
+          "amount",
+          "uint256",
+          false
+        ],
+        [
+          "eth",
+          "uint256",
+          false
+        ],
+        [
+          "fee",
+          "uint256",
+          false
+        ],
+        [
+          "postPrice",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenSold",
+      "signature": "TokenSold(uint256,address,address,uint256,uint256,uint256,uint256)",
+      "topic": "0x03a4693e592f5e75dc7c136acb39b146d2b4966c0e509c34f362dee02b3b861a",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "ts",
+          "uint256",
+          false
+        ],
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "seller",
+          "address",
+          false
+        ],
+        [
+          "amount",
+          "uint256",
+          false
+        ],
+        [
+          "eth",
+          "uint256",
+          false
+        ],
+        [
+          "fee",
+          "uint256",
+          false
+        ],
+        [
+          "postPrice",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "LaunchedToDEX",
+      "signature": "LaunchedToDEX(address,address,uint256,uint256)",
+      "topic": "0x6e4f47630b8745b8cacbd44f42a8a33e7eea7cc08ef22fc7630f4f385784ff7d",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "pool",
+          "address",
+          false
+        ],
+        [
+          "amount",
+          "uint256",
+          false
+        ],
+        [
+          "eth",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenCurveSetV2",
+      "signature": "TokenCurveSetV2(address,uint256,uint256,uint256)",
+      "topic": "0x71a10912a55f73d3cced0d1515c2b33c396c80342522bad0e295ccbede556f37",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "r",
+          "uint256",
+          false
+        ],
+        [
+          "h",
+          "uint256",
+          false
+        ],
+        [
+          "k",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenQuoteSet",
+      "signature": "TokenQuoteSet(address,address)",
+      "topic": "0x3ceb902d3c555c21c3415b6aa839104b18e4825b2f8324011ff979089a507a8c",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "quoteToken",
+          "address",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenMigratorSet",
+      "signature": "TokenMigratorSet(address,uint8)",
+      "topic": "0xcf2372b9357f0d392563d2cedb11e2b3bf0c14d2b8b75eb8bad073bbea9b0ff9",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "migratorType",
+          "uint8",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenDexPreferenceSet",
+      "signature": "TokenDexPreferenceSet(address,uint8,uint8)",
+      "topic": "0x6b3125ac92c93333dab20ade84015b8cde845176b110057b49a81768c0cda374",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "dexId",
+          "uint8",
+          false
+        ],
+        [
+          "lpFeeProfile",
+          "uint8",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "TokenVersionSet",
+      "signature": "TokenVersionSet(address,uint8)",
+      "topic": "0x37502bf23c59a12e1036e7580a8dc056803623dbcd0885abb882adfa069ac89e",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "version",
+          "uint8",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTokenTaxSet",
+      "signature": "FlapTokenTaxSet(address,uint256)",
+      "topic": "0x1546924f4680b1b2e093fd251c437c8781d81a21ed8ad1895e1f2c9b78db0cd0",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "tax",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTokenAsymmetricTaxSet",
+      "signature": "FlapTokenAsymmetricTaxSet(address,uint256,uint256)",
+      "topic": "0x46cc246a238d1ca0951a15200994903e2d56cbb0389e63f09d66412a787aa3c0",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "buyTax",
+          "uint256",
+          false
+        ],
+        [
+          "sellTax",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTokenCirculatingSupplyChanged",
+      "signature": "FlapTokenCirculatingSupplyChanged(address,uint256)",
+      "topic": "0x115c78ad17c4763fb97bca94f3e59dc8cb2e59c9d3862f24a694ec401200f562",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "newSupply",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTokenProgressChanged",
+      "signature": "FlapTokenProgressChanged(address,uint256)",
+      "topic": "0x4c35e20d1e9bce377c7d9ec1572d934e46d62961f4da8af5beb8002d5906742d",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "newProgress",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapNFTGated",
+      "signature": "FlapNFTGated(address,address)",
+      "topic": "0x2179156b3d2ade0f0de96eff28a7c29d924002784e113e69108d91a02cbf9098",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "nft",
+          "address",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTokenCLPoolCreated",
+      "signature": "FlapTokenCLPoolCreated(address,bytes32,uint160)",
+      "topic": "0xb1acc4d02e54a5f769cd0b689d82b8b5d5be55f2557a17d9d202e227cff2d335",
+      "sources": [
+        "flap_curve"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "poolId",
+          "bytes32",
+          false
+        ],
+        [
+          "sqrtPriceX96",
+          "uint160",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTaxVaultTokenCreated",
+      "signature": "FlapTaxVaultTokenCreated(address,address,address)",
+      "topic": "0x1a9fe01bcb4855c926d7757a81014e36cae596a0e3047d297d2cf88ca298a77d",
+      "sources": [
+        "flap_vault"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          true
+        ],
+        [
+          "vault",
+          "address",
+          true
+        ],
+        [
+          "vaultFactory",
+          "address",
+          true
+        ]
+      ]
+    },
+    {
+      "name": "FlapDirectLaunched",
+      "signature": "FlapDirectLaunched(address,uint8,address,bytes32,bytes)",
+      "topic": "0x1cd955dcdd7a83382ee57896bcbc339565a84f9c8a35d2f70cf6c797bcce3aad",
+      "sources": [
+        "flap_direct"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ],
+        [
+          "kind",
+          "uint8",
+          false
+        ],
+        [
+          "creator",
+          "address",
+          false
+        ],
+        [
+          "schemaId",
+          "bytes32",
+          false
+        ],
+        [
+          "data",
+          "bytes",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "FlapTokenGraduated",
+      "signature": "FlapTokenGraduated(address)",
+      "topic": "0x6300fad9962118904c9128fb499a387b496e9312bb8140b4dadc04c0f105c714",
+      "sources": [
+        "flap_direct"
+      ],
+      "fields": [
+        [
+          "token",
+          "address",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "PairCreated",
+      "signature": "PairCreated(address,address,address,uint256)",
+      "topic": "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9",
+      "sources": [
+        "pancake_v2_factory"
+      ],
+      "fields": [
+        [
+          "token0",
+          "address",
+          true
+        ],
+        [
+          "token1",
+          "address",
+          true
+        ],
+        [
+          "pair",
+          "address",
+          false
+        ],
+        [
+          "count",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "PoolCreated",
+      "signature": "PoolCreated(address,address,uint24,int24,address)",
+      "topic": "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118",
+      "sources": [
+        "pancake_v3_factory"
+      ],
+      "fields": [
+        [
+          "token0",
+          "address",
+          true
+        ],
+        [
+          "token1",
+          "address",
+          true
+        ],
+        [
+          "fee",
+          "uint24",
+          true
+        ],
+        [
+          "tickSpacing",
+          "int24",
+          false
+        ],
+        [
+          "pool",
+          "address",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "Transfer",
+      "signature": "Transfer(address,address,uint256)",
+      "topic": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+      "sources": [
+        "token",
+        "pool_v2"
+      ],
+      "fields": [
+        [
+          "from",
+          "address",
+          true
+        ],
+        [
+          "to",
+          "address",
+          true
+        ],
+        [
+          "value",
+          "uint256",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "Sync",
+      "signature": "Sync(uint112,uint112)",
+      "topic": "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1",
+      "sources": [
+        "pool_v2"
+      ],
+      "fields": [
+        [
+          "reserve0",
+          "uint112",
+          false
+        ],
+        [
+          "reserve1",
+          "uint112",
+          false
+        ]
+      ]
+    },
+    {
+      "name": "Swap",
+      "signature": "Swap(address,uint256,uint256,uint256,uint256,address)",
+      "topic": "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+      "sources": [
+        "pool_v2"
+      ],
+      "fields": [
+        [
+          "sender",
+          "address",
+          true
+        ],
+        [
+          "amount0In",
+          "uint256",
+          false
+        ],
+        [
+          "amount1In",
+          "uint256",
+          false
+        ],
+        [
+          "amount0Out",
+          "uint256",
+          false
+        ],
+        [
+          "amount1Out",
+          "uint256",
+          false
+        ],
+        [
+          "to",
+          "address",
+          true
+        ]
+      ]
+    },
+    {
+      "name": "Swap",
+      "signature": "Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128)",
+      "topic": "0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83",
+      "sources": [
+        "pool_v3"
+      ],
+      "fields": [
+        [
+          "sender",
+          "address",
+          true
+        ],
+        [
+          "recipient",
+          "address",
+          true
+        ],
+        [
+          "amount0",
+          "int256",
+          false
+        ],
+        [
+          "amount1",
+          "int256",
+          false
+        ],
+        [
+          "sqrtPriceX96",
+          "uint160",
+          false
+        ],
+        [
+          "liquidity",
+          "uint128",
+          false
+        ],
+        [
+          "tick",
+          "int24",
+          false
+        ],
+        [
+          "protocolFeesToken0",
+          "uint128",
+          false
+        ],
+        [
+          "protocolFeesToken1",
+          "uint128",
+          false
+        ]
+      ]
+    }
+  ],
+  "sources": [
+    "https://github.com/four-meme-community/fourmeme-docs/blob/main/contracts/interfaces/ITokenManager2.sol",
+    "https://docs.flap.sh/en/flap/v2/developers/deployed-contract-addresses",
+    "https://docs.flap.sh/en/flap/v2/developers/bonding-curve/build-an-indexer",
+    "https://docs.flap.sh/en/flap/v2/developers/pool-launch/build-an-indexer",
+    "https://developer.pancakeswap.finance/contracts/v3/addresses"
+  ],
+  "units": "All amounts remain raw integers as strings; event account/recipient is not necessarily the trader. No quote-currency or decimals inference."
+}
