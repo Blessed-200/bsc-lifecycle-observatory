@@ -31,3 +31,8 @@ El nuevo módulo fue probado localmente con RPC falsos y sin red. Los CI de GitH
 2. Ejecutar CI completo del PR y revisar que los 3 proveedores responden con `chainId=56`.
 3. Prueba de recuperación con un proveedor bloqueado y otro que responda 429; observar cobertura de bloques y checkpoints.
 4. Merge después de revisión de seguridad y prueba de carga; no reiniciar con `--bootstrap` sobre estados existentes.
+
+
+## Limitación documentada por BNB Chain
+
+La documentación oficial BSC Mainnet (https://docs.bnbchain.org/bnb-smart-chain/developers/json_rpc/json-rpc-endpoint/) indica que `eth_getLogs` está deshabilitado en sus endpoints públicos BSC de la lista documentada. Por tanto no basta con configurar tres URLs distintas: **cada proveedor debe demostrar soporte real de `eth_getLogs` para la antigüedad y tamaño de rango requeridos**. El balanceador no puede sustituir disponibilidad histórica, capacidad contratada ni redundancia física. Registrar esa comprobación como requisito de despliegue para proveedores independientes (p.ej., QuickNode, Chainstack, Ankr) con credenciales proporcionadas por el usuario.
