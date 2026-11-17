@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from typing import Any
 
@@ -150,31 +151,38 @@ class Collector:
             "SELECT address FROM tokens WHERE security_at<? ORDER BY security_at,address LIMIT 10", (now - 1800,)
         ).fetchall()
         tokens = [r[0] for r in rows]
-        if tokens:
+        for token in tokens:
+            # The unauthenticated endpoint returned only one token for a ten-token batch.
+            # Read each token explicitly and stay below 30 requests/minute, including retries.
+            await asyncio.sleep(3.1)
             try:
                 data = await self.reader.request(
                     "goplus",
-                    "https://api.gopluslabs.io/api/v1/token_security/56?contract_addresses=" + ",".join(tokens),
+                    "https://api.gopluslabs.io/api/v1/token_security/56?contract_addresses=" + token,
                 )
                 if not isinstance(data, dict) or data.get("code") != 1 or not isinstance(data.get("result"), dict):
                     raise ReadError("GoPlus shape mismatch")
-                for token in tokens:
-                    info = data["result"].get(token)
-                    self.journal.write(
-                        "security_observation",
-                        {
-                            "token": token,
-                            "present": info is not None,
-                            "provider_event_time": None,
-                            "basis": "provider_report_not_execution_proof",
-                        },
-                    )
-                    if isinstance(info, dict):
-                        self.store.facts("tokens", token, {"security": info, "security_received_at": time.time()})
+                info = data["result"].get(token)
+                self.journal.write(
+                    "security_observation",
+                    {
+                        "token": token,
+                        "present": isinstance(info, dict),
+                        "provider_event_time": None,
+                        "basis": "provider_report_not_execution_proof",
+                    },
+                )
+                if isinstance(info, dict):
+                    self.store.facts("tokens", token, {"security": info, "security_received_at": time.time()})
+                else:
+                    self.store.quality("security_token_missing")
             except ReadError:
                 self.store.quality("security_read_failure")
+                with self.store.db:
+                    self.store.db.execute("UPDATE tokens SET security_at=? WHERE address=?", (now, token))
+                break  # Do not mark unattempted tokens as examined when the provider fails.
             with self.store.db:
-                self.store.db.executemany("UPDATE tokens SET security_at=? WHERE address=?", [(now, t) for t in tokens])
+                self.store.db.execute("UPDATE tokens SET security_at=? WHERE address=?", (now, token))
         self.journal.flush()
 
     async def cycle(self) -> None:

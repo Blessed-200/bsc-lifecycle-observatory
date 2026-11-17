@@ -3,17 +3,20 @@ from __future__ import annotations
 import asyncio
 import base64
 import io
+import json
 import sqlite3
 import tarfile
+import time
 from pathlib import Path
 from typing import Any, cast
+from unittest.mock import AsyncMock
 
 import pytest
 
 from bsc_lifecycle.archive import Github, TransportError, inspect_archive, publish
 from bsc_lifecycle.codec import SPEC, ZERO, decode
 from bsc_lifecycle.collector import Collector, IntegrityError, validate_logs
-from bsc_lifecycle.network import Oversize, Reader
+from bsc_lifecycle.network import Oversize, Reader, ReadError
 from bsc_lifecycle.store import Journal, Store, encoded, sha
 
 TOKEN = "0x" + "11" * 20
@@ -223,6 +226,47 @@ def test_rpc_mutation_never_reaches_network(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="forbidden"):
         asyncio.run(reader.rpc("eth_sendRawTransaction", ["0x"]))
     reader.journal.file.close()
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_security_single_token_reads_preserve_unavailable_coverage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fail: bool
+) -> None:
+    store, journal = Store(tmp_path / "state.sqlite"), Journal(tmp_path)
+    for token in (TOKEN, OTHER, CREATOR):
+        store.token(token, 100)
+    store.db.execute("UPDATE tokens SET market_at=?", (time.time(),))
+    store.db.commit()
+    requested: list[str] = []
+
+    async def request(source: str, url: str) -> dict[str, Any]:
+        assert source == "goplus"
+        token = url.split("contract_addresses=")[1]
+        assert "," not in token
+        requested.append(token)
+        if fail:
+            raise ReadError("provider unavailable")
+        # The provider can omit a token even when HTTP and response code indicate success.
+        return {"code": 1, "result": {token: {"buy_tax": "0.01"}} if token != OTHER else {}}
+
+    reader = cast(Reader, type("SecurityReader", (), {"request": staticmethod(request)})())
+    sleeper = AsyncMock()
+    monkeypatch.setattr("bsc_lifecycle.collector.asyncio.sleep", sleeper)
+    asyncio.run(Collector(store, journal, reader).enrich())
+    rows = {r["address"]: r for r in store.db.execute("SELECT * FROM tokens")}
+    if fail:
+        assert requested == [TOKEN]
+        assert rows[OTHER]["security_at"] == rows[CREATOR]["security_at"] == 0
+        assert store.status()["quality"]["security_read_failure"] == 1
+    else:
+        assert requested == [TOKEN, OTHER, CREATOR]
+        assert "security" in json.loads(rows[TOKEN]["facts"])
+        assert "security" not in json.loads(rows[OTHER]["facts"])
+        assert "security" in json.loads(rows[CREATOR]["facts"])
+        assert store.status()["quality"]["security_token_missing"] == 1
+    assert all(call.args[0] >= 3 for call in sleeper.await_args_list)
+    journal.file.close()
+    store.db.close()
 
 
 class ArchiveSink:
