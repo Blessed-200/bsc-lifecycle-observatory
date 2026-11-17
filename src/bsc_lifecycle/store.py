@@ -289,6 +289,7 @@ class Store:
             "tokens": sum(by_platform.values()),
             "events": events,
             "quality": {r[0]: r[1] for r in self.db.execute("SELECT * FROM quality")},
+            "wallet_sources": self.get("wallet_source_health"),
             "coverage_claim": "Only named contracts and observed entities since initial_block; no full-life claim",
             "holder_basis": "Transfer-event reconstruction, not verified balances; negative balances are flagged",
             "availability": "chain time and received time are distinct; backfill cannot be used as live knowledge",

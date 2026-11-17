@@ -175,8 +175,20 @@ def assess(
         alarms.append("Continuidad histórica no verificada; no declarar historias completas")
     if status.get("last_session", {}).get("status") == "FAILED":
         alarms.append("La última sesión informó un fallo")
+    wallet_sources = status.get("wallet_sources")
+    if wallet_sources and any(v.get("status") == "UNAVAILABLE" for v in wallet_sources.values()):
+        alarms.append("Alguna fuente de compradores tempranos está inaccesible")
     if any(
-        delta.get(k, 0) for k in ("decode_error", "cycle_read_failure", "market_read_failure", "security_read_failure")
+        delta.get(k, 0)
+        for k in (
+            "decode_error",
+            "cycle_read_failure",
+            "market_read_failure",
+            "security_read_failure",
+            "gmgn_early_read_failure",
+            "ave_early_read_failure",
+            "gmgn_activity_read_failure",
+        )
     ):
         alarms.append("Aumentaron errores de lectura o interpretación")
     report = {
@@ -201,6 +213,7 @@ def assess(
         "quality_counters": quality,
         "quality_increase": delta,
         "source_requests_in_new_archives": dict(requests),
+        "wallet_sources": wallet_sources,
         "external_snapshot_gaps": "No cuantificados por token; un intento de consulta no prueba un dato recibido.",
         "scope": "Contratos y pools listados. 24h de cadena no significa 24h de precios regulares ni venta posible.",
         "financial_execution_enabled": False,
@@ -226,6 +239,13 @@ def render(report: dict[str, Any]) -> str:
         "Huecos de precios/otros proveedores: no cuantificados por token; no se suponen completos.",
         "Errores nuevos: " + json.dumps(report["errors_in_new_archives"], ensure_ascii=False) + ".",
         "Cambios de calidad: " + json.dumps(report["quality_increase"], ensure_ascii=False) + ".",
+        "GMGN/Ave: "
+        + (
+            ", ".join(f"{k}={v['status']}" for k, v in report["wallet_sources"].items())
+            if report.get("wallet_sources")
+            else "todavía sin registro del nuevo conector en esta sesión"
+        )
+        + ".",
         "Los balances negativos de Transfer son reconstrucciones incompletas, no pérdidas de una billetera.",
         "Aptitud para estrategias: no verificada. No se calcularon ganancias ni se abrió el bloque ciego.",
         "Billetera desconectada. Cero transacciones autorizadas.",
