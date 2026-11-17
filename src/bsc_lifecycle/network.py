@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 
 import aiohttp
 
+from bsc_lifecycle.rpc_pool import RangeLimitError, RPCPool, TransientRPCError
 from bsc_lifecycle.store import Journal, sha
 
 RPC_URLS = ("https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io")
@@ -47,6 +48,7 @@ class Reader:
         self.cooldown: dict[str, float] = {}
         self.next_rpc = 0.0
         self.serial = 0
+        self.rpc_pool = RPCPool(urls, self._execute_rpc, retry_budget_sec=15.0)
 
     async def request(self, source: str, url: str, payload: dict[str, Any] | None = None) -> Any:
         if time.time() < self.cooldown.get(source, 0):
@@ -121,25 +123,26 @@ class Reader:
             raise ReadError("missing RPC result")
         return result["result"]
 
+    async def _execute_rpc(self, url: str, method: str, params: list[Any]) -> Any:
+        """Adapt existing raw-journalled RPC transport to resilient provider scheduling."""
+        source = "rpc-" + sha(url.encode())[:12]
+        try:
+            return await self._one(url, method, params)
+        except Oversize as exc:
+            raise RangeLimitError(str(exc)) from exc
+        except ReadError as exc:
+            retry_after = max(0.0, self.cooldown.get(source, 0.0) - time.time())
+            raise TransientRPCError(str(exc), retry_after=retry_after) from exc
+
     async def rpc(self, method: str, params: list[Any]) -> Any:
         if method not in READ_METHODS:
             raise ValueError("RPC mutation forbidden")
-        for url in self.urls:
-            source = "rpc-" + sha(url.encode())[:12]
-            if self.cooldown.get(source, 0) > time.time():
-                continue
-            try:
-                if url not in self.verified:
-                    if await self._one(url, "eth_chainId", []) != "0x38":
-                        self.cooldown[source] = time.time() + 3600
-                        raise ReadError("wrong chain")
-                    self.verified.add(url)
-                return await self._one(url, method, params)
-            except Oversize:
-                raise
-            except ReadError:
-                continue
-        raise ReadError("all RPC providers unavailable or cooling down")
+        try:
+            return await self.rpc_pool.read(method, params)
+        except RangeLimitError as exc:
+            raise Oversize(str(exc)) from exc
+        except TransientRPCError as exc:
+            raise ReadError(str(exc)) from exc
 
     async def block(self, number: int | str) -> dict[str, Any]:
         value = await self.rpc("eth_getBlockByNumber", [hex(number) if isinstance(number, int) else number, False])

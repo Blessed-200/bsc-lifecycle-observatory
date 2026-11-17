@@ -87,8 +87,12 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
                     store.quality("cycle_read_failure")
                     journal.write("cycle_failure", {"error": str(exc), "consecutive": failures})
                     store.db.commit()
-                    if failures >= 12:
-                        raise RuntimeError("sources unavailable for 12 cycles; data retained") from exc
+                    if failures == 12:
+                        journal.write(
+                            "source_degraded", {"at": time.time(), "consecutive": failures, "cursor_preserved": True}
+                        )
+                    # Keep bounded collector session alive; never advance a failed stream.
+                    # Subsequent polling cycles retry independently; archives still publish.
                 status = store.status()
                 atomic(root / "status.json", encoded(status))
                 print(
@@ -115,7 +119,15 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
             store.set("last_session", {"status": "FAILED", "error_type": type(exc).__name__, "at": time.time()})
             raise
         else:
-            store.set("last_session", {"status": "STOPPED" if stop.is_set() else "COMPLETED", "at": time.time()})
+            store.set(
+                "last_session",
+                {
+                    "status": "DEGRADED" if failures else ("STOPPED" if stop.is_set() else "COMPLETED"),
+                    "at": time.time(),
+                    "consecutive_rpc_failures": failures,
+                    "cursor_preserved": True,
+                },
+            )
         finally:
             store.db.commit()
             journal.flush()

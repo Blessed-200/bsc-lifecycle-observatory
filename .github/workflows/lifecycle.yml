@@ -36,6 +36,8 @@ jobs:
     env:
       PYTHONPATH: src
       GH_TOKEN: ${{ github.token }}
+      # Optional three or more independent, HTTPS JSON-RPC endpoints. Store URLs only in Actions secrets.
+      BSC_RPC_URLS: ${{ secrets.BSC_RPC_URLS }}
       MINUTES: ${{ github.event_name == 'push' && '3' || inputs.minutes || '175' }}
       BOOTSTRAP: ${{ github.event_name == 'push' || inputs.bootstrap || false }}
     steps:
