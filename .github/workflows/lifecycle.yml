@@ -1,5 +1,7 @@
 name: BSC lifecycle collection
 on:
+  push:
+    branches: [feat/continuous-lifecycle]
   schedule:
     - cron: '23 */3 * * *'
   workflow_dispatch:
@@ -24,15 +26,18 @@ concurrency:
   cancel-in-progress: false
 jobs:
   census:
-    # The research repository stays private. Continuous compute runs only in its clean public sibling.
-    if: github.repository == 'Blessed-200/bsc-lifecycle-observatory'
+    # Private feature pushes run a three-minute transport integration test, never a continuous chain.
+    if: >-
+      github.repository == 'Blessed-200/bsc-lifecycle-observatory' ||
+      (github.repository == 'Blessed-200/bsc-alpha-collector' && github.event_name == 'push' &&
+       github.ref == 'refs/heads/feat/continuous-lifecycle')
     runs-on: ubuntu-latest
     timeout-minutes: 210
     env:
       PYTHONPATH: src
       GH_TOKEN: ${{ github.token }}
-      MINUTES: ${{ inputs.minutes || '175' }}
-      BOOTSTRAP: ${{ inputs.bootstrap || false }}
+      MINUTES: ${{ github.event_name == 'push' && '3' || inputs.minutes || '175' }}
+      BOOTSTRAP: ${{ github.event_name == 'push' || inputs.bootstrap || false }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -55,7 +60,9 @@ jobs:
           python -m bsc_lifecycle --out lifecycle-state --minutes "$MINUTES" \
             --archive-repo "$GITHUB_REPOSITORY" "${args[@]}"
       - name: Continue after verified checkpoint
-        if: success() && steps.switch.outputs.enabled == 'true' && (github.event_name == 'schedule' || inputs.continue)
+        if: >-
+          success() && github.repository == 'Blessed-200/bsc-lifecycle-observatory' &&
+          steps.switch.outputs.enabled == 'true' && (github.event_name == 'schedule' || inputs.continue)
         run: |
           gh workflow run lifecycle.yml --repo "$GITHUB_REPOSITORY" --ref main \
             -f bootstrap=false -f minutes=175 -f continue=true

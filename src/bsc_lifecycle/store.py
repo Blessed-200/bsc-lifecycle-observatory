@@ -255,6 +255,15 @@ class Store:
             str(r[0]): r[1] for r in self.db.execute("SELECT platform,count(*) FROM tokens GROUP BY platform")
         }
         events = {r[0]: r[1] for r in self.db.execute("SELECT event,count FROM event_counts")}
+        coverage = {
+            r[0].removeprefix("covered_time:"): json.loads(r[1])
+            for r in self.db.execute("SELECT key,value FROM meta WHERE key LIKE 'covered_time:%'")
+        }
+        complete_24h = 0
+        for token in self.db.execute("""SELECT t.birth_ts,t.birth_block,e.start_block,e.stream FROM tokens t
+            JOIN entities e ON e.address=t.address WHERE t.birth_ts IS NOT NULL"""):
+            if token[2] <= token[1] and coverage.get(token[3], 0) >= token[0] + 86400:
+                complete_24h += 1
         return {
             "schema": 1,
             "updated_at": time.time(),
@@ -266,6 +275,12 @@ class Store:
             "last_cycle": self.get("last_cycle"),
             "last_finalized_head": self.get("last_finalized_head"),
             "initial_block": self.get("initial_block"),
+            "collection_started_at": self.get("created_at"),
+            "births_observed": self.db.execute("SELECT count(*) FROM tokens WHERE birth_block IS NOT NULL").fetchone()[
+                0
+            ],
+            "births_with_24h_token_logs": complete_24h,
+            "protocol_covered_until": coverage.get("protocols"),
             "protocol_cursor": protocol[0] if protocol else None,
             "protocol_last_success": protocol[1] if protocol else None,
             "oldest_entity_cursor": row[0],

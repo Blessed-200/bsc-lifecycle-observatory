@@ -203,7 +203,9 @@ class Collector:
             (frontier,),
         ).fetchall()
         for row in pending:
-            await self.scan(row[0], frontier, span=1500)
+            # Old, quiet entities can catch up hours without thousands of empty small calls.
+            # Dense responses are recursively split and no cursor skips an incomplete range.
+            await self.scan(row[0], frontier, span=50_000)
         if time.time() - self.last_enrichment >= 30:
             await self.enrich()
             self.last_enrichment = time.time()
