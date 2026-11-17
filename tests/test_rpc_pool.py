@@ -126,7 +126,7 @@ def test_oversize_fails_closed_for_collector_to_split() -> None:
 
 @pytest.mark.parametrize(
     "invalid",
-    [(), (URLS[0], URLS[0]), ("http://bad.example",), ("https://user:password@bad.example",)],
+    [(), (URLS[0], URLS[0]), (URLS[0], URLS[1]), ("http://bad.example",), ("https://user:password@bad.example",)],
 )
 def test_rejects_unsafe_endpoint_configuration(invalid: tuple[str, ...]) -> None:
     async def execute(url: str, method: str, params: list[Any]) -> Any:
