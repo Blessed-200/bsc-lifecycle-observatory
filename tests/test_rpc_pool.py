@@ -131,7 +131,7 @@ def test_rejects_unsafe_endpoint_configuration(invalid: tuple[str, ...]) -> None
     async def execute(url: str, method: str, params: list[Any]) -> Any:
         return None
 
-    with pytest.raises(ValueError, match="RPC endpoints|RPC endpoint|at least 3"):
+    with pytest.raises(ValueError, match=r"RPC endpoints|RPC endpoint|at least 3"):
         RPCPool(invalid, execute)
 
 
