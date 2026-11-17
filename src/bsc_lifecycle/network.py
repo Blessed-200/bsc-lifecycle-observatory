@@ -11,8 +11,8 @@ from urllib.parse import urlsplit
 
 import aiohttp
 
+from bsc_lifecycle.rpc_pool import RangeLimitError, RPCPool, TransientRPCError
 from bsc_lifecycle.store import Journal, sha
-from bsc_lifecycle.rpc_pool import RPCPool, RangeLimitError, TransientRPCError
 
 RPC_URLS = ("https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io")
 READ_METHODS = frozenset(
