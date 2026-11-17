@@ -9,7 +9,6 @@ import pytest
 
 from bsc_lifecycle.rpc_pool import RangeLimitError, RPCPool, TransientRPCError
 
-
 URLS = (
     "https://rpc-a.example/key1",
     "https://rpc-b.example/key2",
@@ -132,7 +131,7 @@ def test_rejects_unsafe_endpoint_configuration(invalid: tuple[str, ...]) -> None
     async def execute(url: str, method: str, params: list[Any]) -> Any:
         return None
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="RPC endpoints|RPC endpoint|at least 3"):
         RPCPool(invalid, execute)
 
 
