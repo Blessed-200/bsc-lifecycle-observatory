@@ -88,7 +88,9 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
                     journal.write("cycle_failure", {"error": str(exc), "consecutive": failures})
                     store.db.commit()
                     if failures == 12:
-                        journal.write("source_degraded", {"at": time.time(), "consecutive": failures, "cursor_preserved": True})
+                        journal.write(
+                            "source_degraded", {"at": time.time(), "consecutive": failures, "cursor_preserved": True}
+                        )
                     # Keep bounded collector session alive; never advance a failed stream.
                     # Subsequent polling cycles retry independently; archives still publish.
                 status = store.status()
