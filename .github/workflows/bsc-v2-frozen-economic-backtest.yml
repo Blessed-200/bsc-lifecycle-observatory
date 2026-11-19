@@ -1,0 +1,61 @@
+name: BSC V2 Frozen Economic Backtest
+on:
+  push:
+    branches: [research/bsc-v2-economic-replay-20261119]
+    paths:
+      - experiments/run-frozen-v2-economic-study.txt
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Blessed-200/bsc-lifecycle-observatory
+      SOURCE_RUN_ID: '44434749287'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Fetch sealed-by-run onchain cohorts
+        run: |
+          set -euo pipefail
+          gh run download "$SOURCE_RUN_ID" --repo "$GH_REPO" \
+            --pattern 'cohort-*' --dir cohort-evidence
+          for START in 134000000 134050000 134105000 134160000 134225000 134290000 134350000; do
+            SRC="cohort-evidence/cohort-${START}-${SOURCE_RUN_ID}"
+            test -f "$SRC/summary.json"
+            mkdir -p "cohort-evidence/cohort-${START}"
+            cp "$SRC"/* "cohort-evidence/cohort-${START}/"
+          done
+          sha256sum cohort-evidence/cohort-*/births.jsonl.gz \
+            cohort-evidence/cohort-*/events.jsonl.gz > cohort-evidence/source-checksums.txt
+      - name: Validate program and execute one frozen evaluation
+        run: |
+          python3 -m compileall -q scripts/replay_bsc_v2_economics.py
+          python3 scripts/replay_bsc_v2_economics.py \
+            --cohorts cohort-evidence \
+            --out evidence/frozen-economic-evaluation
+          cp cohort-evidence/source-checksums.txt evidence/frozen-economic-evaluation/
+          cat evidence/frozen-economic-evaluation/economic_report.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify capital and signing are disabled
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open('evidence/frozen-economic-evaluation/economic_report.json'))
+          assert d['economic_status']=='NO_GO'
+          assert d['wallet_signer'] is False
+          assert d['live_trading'] is False
+          assert d['sellable_token_verified'] is False
+          assert d['realized_roi'] is None
+          print('RESEARCH_ONLY_LOCKOUT_VERIFIED',flush=True)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: frozen-bsc-v2-economic-${{ github.run_id }}
+          path: evidence/frozen-economic-evaluation/
+          if-no-files-found: warn
+          retention-days: 30
