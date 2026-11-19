@@ -1,0 +1,47 @@
+name: PancakeSwap V2 Historical Pool Follow-up
+on:
+  push:
+    branches: [research/archive-backfill-audit-20261118]
+    paths:
+      - .github/workflows/historical-v2-pool-followup.yml
+      - scripts/historical_v2_pair_followup.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: bsc-native-followup-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Blessed-200/bsc-lifecycle-observatory
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Download fixed historical birth-census artifact
+        run: |
+          mkdir -p evidence/source-births
+          gh run download 44429657456 --repo "$GH_REPO" \
+            --name bsc-factory-backfill-44429657456 \
+            --dir evidence/source-births
+          test -f evidence/source-births/pair_created.jsonl.gz
+      - name: Onchain historical trade and reserve replay
+        timeout-minutes: 19
+        run: |
+          python3 -m compileall -q scripts/historical_v2_pair_followup.py
+          python3 scripts/historical_v2_pair_followup.py \
+            --births evidence/source-births/pair_created.jsonl.gz \
+            --out evidence/onchain-birth-followup
+          cat evidence/onchain-birth-followup/summary.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: historical-v2-pair-followup-${{ github.run_id }}
+          path: evidence/onchain-birth-followup/
+          if-no-files-found: warn
+          retention-days: 30
