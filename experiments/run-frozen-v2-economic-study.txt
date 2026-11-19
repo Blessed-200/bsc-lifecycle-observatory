@@ -1,0 +1,4 @@
+One-time frozen evaluation of 7 BSC historical cohorts from GitHub Actions run 44434749287.
+Training: 134000000,134050000,134105000,134160000,134225000.
+Evaluation: 134290000,134350000.
+No wallet, no live orders, never label AMM proxy as executed profit.
