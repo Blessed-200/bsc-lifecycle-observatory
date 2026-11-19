@@ -162,6 +162,40 @@ def finite_bank(trades):
             "drawdown_lower_bound_pct":100*max_dd,
             "caveat":"No actual token taxes/fills, historical BNB/USD variation ignored"}
 
+def reserve_drain_study(rows):
+    """Competing hazard: post-entry quote-reserve collapse at any observed Sync.
+
+    This is a liquidity-depth event, not automatically a malicious rug.
+    Pools with incomplete follow-up are censored rather than surviving.
+    """
+    observed=[]
+    for cohort,b,events,last in rows:
+        t=b["birth_block"]+ENTRY_AGE
+        if t>last: continue
+        ft,reason=feature(b,events,t)
+        if ft is None:continue
+        drain_at=None
+        for e in events:
+            if e["kind"]!="SYNC" or e["block"]<=t:continue
+            q,_=reserves(b,e)
+            if q <= .10*ft["q_bnb"]:
+                drain_at=e["block"]
+                break
+        observed.append((cohort,t,last,drain_at,ft["sells"]>=2))
+    groups={}
+    for label,cohortset in (("train",TRAIN),("evaluation",BLIND)):
+        subset=[x for x in observed if x[0] in cohortset]
+        rowsout={}
+        for horizon in (200,400,800,1600,3000):
+            comparable=[x for x in subset if x[2]>=x[1]+horizon]
+            hits=sum(x[3] is not None and x[3]<=x[1]+horizon for x in comparable)
+            sellseen=[x for x in comparable if x[4]]
+            sellhits=sum(x[3] is not None and x[3]<=x[1]+horizon for x in sellseen)
+            rowsout[str(horizon)]={"at_risk":len(comparable),"depth_collapses":hits,
+                "seller_tested_at_risk":len(sellseen),"seller_tested_collapses":sellhits}
+        groups[label]={"entry_eligible_pool_count":len(subset),"horizons_blocks":rowsout}
+    return groups
+
 def execute(root,out):
     rows,coverage=read_cohorts(root)
     ops,counts=build(rows)
@@ -183,6 +217,7 @@ def execute(root,out):
         "all_cohorts":[{"start":x["start"],"pair_births":x["pair_births"],"swaps":x["event_swap"],"syncs":x["event_sync"],"failures":x["n_failed"]} for x in coverage],
         "entry_age_blocks":ENTRY_AGE,"stake_bnb":STAKE_BNB,
         "selection_counts":counts,"train_ranking":ranks,
+        "reserve_drain_mechanism":reserve_drain_study(rows),
         "wallet_signer":False,"live_trading":False,"sellable_token_verified":False,
         "economic_status":"NO_GO", "realized_roi":None,
         "limitations":["CP-AMM counterfactual only; unknown transfer taxes/honeypots/failed sales",
