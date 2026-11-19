@@ -1,6 +1,6 @@
-One-time frozen evaluation of 7 BSC historical cohorts from GitHub Actions run 44434749287.
-Training: 134000000,134050000,134105000,134160000,134225000.
-Evaluation: 134290000,134350000.
-No wallet, no live orders, never label AMM proxy as executed profit.
-
-Re-run: interpreter syntax fixed, exact same frozen cohorts, policy and source run.
+Frozen one-time causal economic validation for 7 BSC V2 cohorts.
+SOURCE_RUN_ID=44436716324.
+Training blocks: 134000000 134050000 134105000 134160000 134225000.
+Blind evaluation blocks: 134290000 134350000.
+Hardened RPC event array groups=10 based on empirical HTTP403 test at 25.
+Live signing prohibited; net executable ROI unverified.
