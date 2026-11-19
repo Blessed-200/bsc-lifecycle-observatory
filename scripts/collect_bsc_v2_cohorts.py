@@ -152,7 +152,7 @@ def run(start,out):
     wbnb=sorted([x for x in pairs if x["quote"]==WBNB],
                 key=lambda x:hashlib.sha256(x["pool"].encode()).digest())
     selected=wbnb[:125]
-    groups=[[x["pool"] for x in selected[n:n+25]] for n in range(0,len(selected),25)]
+    groups=[[x["pool"] for x in selected[n:n+10]] for n in range(0,len(selected),10)]
     all_events={}
     for a in range(start,scan_end+1,100):
         b=min(scan_end,a+99)
