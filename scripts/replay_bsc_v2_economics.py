@@ -254,7 +254,7 @@ def execute(root,out):
         for row in ops:f.write(json.dumps(row,sort_keys=True)+"\n")
     print(json.dumps({"train_total":len(ranks),"universe":len(rows),
                       "frozen_rule":report.get("frozen_rule"),
-                      "holdout":report["holdout"],"state":report["economic_status"]},indent=2,flush=True)
+                      "holdout":report["holdout"],"state":report["economic_status"]},indent=2),flush=True)
 
 def main():
     p=argparse.ArgumentParser()
