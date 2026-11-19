@@ -54,10 +54,20 @@ jobs:
             --archive "archive/${{ steps.head.outputs.asset }}" \
             --out evidence/lifecycle-archive
           cat evidence/lifecycle-archive/summary.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Reconstruct available onchain V2 reserve ratio tape
+        run: |
+          python3 -m compileall -q scripts/replay_raw_amm.py
+          python3 scripts/replay_raw_amm.py \
+            --head archive/head.json \
+            --archive "archive/${{ steps.head.outputs.asset }}" \
+            --out evidence/amm-tape
+          cat evidence/amm-tape/summary.json >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: historical-archive-audit-${{ github.run_id }}
-          path: evidence/lifecycle-archive/
+          path: |
+            evidence/lifecycle-archive/
+            evidence/amm-tape/
           if-no-files-found: warn
           retention-days: 30
