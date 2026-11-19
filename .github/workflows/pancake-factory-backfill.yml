@@ -1,0 +1,33 @@
+name: PancakeSwap V2 Historical Factory Backfill
+on:
+  push:
+    branches: [research/archive-backfill-audit-20261118]
+    paths:
+      - .github/workflows/pancake-factory-backfill.yml
+      - scripts/backfill_pancake_factory.py
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: bsc-pancake-backfill-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify Python and backfill historical pair births from public BSC
+        run: |
+          python3 -m compileall -q scripts/backfill_pancake_factory.py
+          python3 scripts/backfill_pancake_factory.py
+          cat evidence/factory-backfill/summary.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: bsc-factory-backfill-${{ github.run_id }}
+          path: evidence/factory-backfill/
+          retention-days: 30
+          if-no-files-found: warn
