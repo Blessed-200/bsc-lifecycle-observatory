@@ -1,0 +1,20 @@
+name: Stop Obsolete Invalid RPC Research Runs
+on:
+  push:
+    branches: [research/bsc-v2-economic-replay-20261119]
+    paths: [.github/workflows/bsc-v2-stop-obsolete.yml]
+permissions:
+  contents: read
+  actions: write
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Blessed-200/bsc-lifecycle-observatory
+    steps:
+      - name: Cancel old 25-address group run and obsolete dependent evaluation
+        run: |
+          gh run cancel 44434749287 --repo "$GH_REPO" || true
+          gh run cancel 44436138232 --repo "$GH_REPO" || true
