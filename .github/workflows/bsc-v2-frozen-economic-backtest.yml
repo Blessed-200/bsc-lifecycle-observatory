@@ -10,7 +10,7 @@ permissions:
 jobs:
   evaluate:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 85
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: Blessed-200/bsc-lifecycle-observatory
@@ -21,6 +21,9 @@ jobs:
           persist-credentials: false
       - name: Offline adversarial tests
         run: python3 -m unittest discover -s tests -p "test_v2_economics.py" -v
+      - name: Await full historical retrieval and enforce zero failed jobs
+        timeout-minutes: 70
+        run: gh run watch "$SOURCE_RUN_ID" --repo "$GH_REPO" --exit-status --interval 30
       - name: Fetch sealed-by-run onchain cohorts
         run: |
           set -euo pipefail
