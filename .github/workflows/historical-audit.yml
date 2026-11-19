@@ -1,0 +1,63 @@
+name: BSC Historical Archive Audit (no trading)
+on:
+  push:
+    branches: [research/archive-backfill-audit-20261118]
+    paths:
+      - .github/workflows/historical-audit.yml
+      - scripts/audit_historical_archive.py
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: historical-archive-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Blessed-200/bsc-lifecycle-observatory
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Read checkpoint and download existing historical archive
+        run: |
+          set -euo pipefail
+          mkdir -p archive evidence/lifecycle-archive
+          gh api "repos/$GH_REPO/contents/lifecycle-head.json?ref=lifecycle-state" --jq .content | base64 --decode > archive/head.json
+          python3 - <<'PY'
+          import json,os
+          x=json.load(open('archive/head.json'))
+          for key in ('asset','tag','sha256'):
+              if not isinstance(x.get(key),str):
+                  raise ValueError('invalid head field '+key)
+          if x['asset']!='batch-'+x['sha256']+'.tar.gz' or not x['tag'].startswith('lifecycle-'):
+              raise ValueError('invalid archive identity')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as fh:
+              fh.write('asset='+x['asset']+'\n')
+              fh.write('tag='+x['tag']+'\n')
+          PY
+        id: head
+      - name: Download archive referenced by verified checkpoint
+        env:
+          ASSET: ${{ steps.head.outputs.asset }}
+          TAG: ${{ steps.head.outputs.tag }}
+        run: |
+          gh release download "$TAG" --repo "$GH_REPO" --pattern "$ASSET" --dir archive --clobber
+      - name: Extract and evaluate real historical state
+        run: |
+          python3 -m compileall -q scripts/audit_historical_archive.py
+          python3 scripts/audit_historical_archive.py \
+            --head archive/head.json \
+            --archive "archive/${{ steps.head.outputs.asset }}" \
+            --out evidence/lifecycle-archive
+          cat evidence/lifecycle-archive/summary.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: historical-archive-audit-${{ github.run_id }}
+          path: evidence/lifecycle-archive/
+          if-no-files-found: warn
+          retention-days: 30
