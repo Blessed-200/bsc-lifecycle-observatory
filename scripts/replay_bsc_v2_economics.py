@@ -23,7 +23,7 @@ FEE=.0025
 STAKE_BNB=.005
 GAS_BNB=.00003
 MIN_Q=.5
-ARMS=("ALL","FLOW","FLOW_DEPTH","FLOW_STABLE","EARLY_BUYS")
+ARMS=("ALL","FLOW","FLOW_DEPTH","FLOW_STABLE","EARLY_BUYS","FLOW_SELL_TESTED")
 
 def readgz(path):
     with gzip.open(path,"rt",encoding="utf-8") as f:
@@ -92,6 +92,7 @@ def selected(arm,ft):
     if arm=="FLOW_DEPTH":return selected("FLOW",ft) and ft["q_bnb"]>=1
     if arm=="FLOW_STABLE":return selected("FLOW_DEPTH",ft) and ft["retained_quote"]>=.9
     if arm=="EARLY_BUYS":return ft["buys"]>=3 and ft["buy_share"]>=.7 and ft["q_bnb"]>=2
+    if arm=="FLOW_SELL_TESTED":return selected("FLOW_DEPTH",ft) and ft["sells"]>=2
     raise ValueError("UNKNOWN_RULE")
 
 def multiple(b,events,ft,exit_block):
@@ -176,7 +177,7 @@ def execute(root,out):
     ranks.sort(key=lambda x:x["score_approx_lower_95"],reverse=True)
     report={
         "schema":"bsc_v2_memecoin_counterfactual_v1",
-        "selection":"Training cohorts only, predeclared 5 arms x 5 block horizons",
+        "selection":"Training cohorts only, predeclared 6 arms x 5 block horizons",
         "fixed_cohorts_train":list(TRAIN),"fixed_cohorts_blind":list(BLIND),
         "universe_tokens_wbnb":len(rows),
         "all_cohorts":[{"start":x["start"],"pair_births":x["pair_births"],"swaps":x["event_swap"],"syncs":x["event_sync"],"failures":x["n_failed"]} for x in coverage],
@@ -188,7 +189,7 @@ def execute(root,out):
          "Gas .00003 BNB is an assumed sensitivity, not historical receipt",
          "Historical block ages are not exact seconds; results reflect ex-post block snapshots",
          "Only seven narrow cohorts, not a full 24-hour/day sampling census",
-         "Best-of-25 rules introduces selection bias; two later cohorts are descriptive evaluation"],
+         "Best-of-30 rules introduces selection bias; two later cohorts are descriptive evaluation"],
     }
     if ranks:
         best=ranks[0]
