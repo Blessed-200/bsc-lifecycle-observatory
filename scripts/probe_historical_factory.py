@@ -80,6 +80,21 @@ def main() -> None:
                 cell["start_header_hash"] = lo["hash"]
                 cell["end_header_hash"] = hi["hash"]
                 cell["pair_created_count"] = len(logs)
+                # Independent state invariant: PairCreated in [start,end] must
+                # equal allPairsLength(end) - allPairsLength(start-1).
+                try:
+                    state_before = request(endpoint, "eth_call",
+                        [{"to": FACTORY, "data": "0x574f2ba3"}, hex(start - 1)])
+                    state_after = request(endpoint, "eth_call",
+                        [{"to": FACTORY, "data": "0x574f2ba3"}, hex(end)])
+                    delta = int(state_after, 16) - int(state_before, 16)
+                    cell["factory_state_delta"] = delta
+                    cell["factory_state_consistent"] = delta == len(logs)
+                    if delta != len(logs):
+                        cell["status"] = "LOGS_CONTRADICT_FACTORY_STATE"
+                except (ValueError, urllib.error.URLError, TimeoutError, TypeError) as exc:
+                    cell["factory_state_consistent"] = None
+                    cell["factory_state_error"] = type(exc).__name__ + ":" + str(exc)[:140]
                 cell["logs_sha256"] = hashlib.sha256(json.dumps(logs,sort_keys=True).encode()).hexdigest()
                 verified += 1
             except (ValueError, urllib.error.URLError, TimeoutError, KeyError, TypeError) as exc:
