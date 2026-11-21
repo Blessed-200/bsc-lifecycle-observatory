@@ -1,12 +1,12 @@
 BSC · Informe 2026-11-21 · hora de Cuba
 Estado: REQUIERE_REVISION.
-Tokens observados: 10205; nacimientos capturados: 7113.
+Tokens observados: 10728; nacimientos capturados: 7504.
 Con 24 horas de cadena verificadas: 5245.
-Ya tienen edad de 24 horas: 7113.
+Ya tienen edad de 24 horas: 7504.
 Huecos de cadena: no detectados en los tramos auditados.
 Huecos de precios/otros proveedores: no cuantificados por token; no se suponen completos.
-Errores nuevos: {"cycle_failure": 12, "session_failure": 1}.
-Cambios de calidad: {"cycle_read_failure": 12}.
+Errores nuevos: {"cycle_failure": 24, "session_failure": 2}.
+Cambios de calidad: {"cycle_read_failure": 24}.
 GMGN/Ave: ave_early=OK, gmgn_early=UNAVAILABLE.
 Los balances negativos de Transfer son reconstrucciones incompletas, no pérdidas de una billetera.
 Aptitud para estrategias: no verificada. No se calcularon ganancias ni se abrió el bloque ciego.
