@@ -1,8 +1,8 @@
 BSC · Informe 2026-11-21 · hora de Cuba
 Estado: REQUIERE_REVISION.
-Tokens observados: 10728; nacimientos capturados: 7504.
+Tokens observados: 11331; nacimientos capturados: 7961.
 Con 24 horas de cadena verificadas: 5245.
-Ya tienen edad de 24 horas: 7504.
+Ya tienen edad de 24 horas: 7961.
 Huecos de cadena: no detectados en los tramos auditados.
 Huecos de precios/otros proveedores: no cuantificados por token; no se suponen completos.
 Errores nuevos: {"cycle_failure": 12, "session_failure": 1}.
