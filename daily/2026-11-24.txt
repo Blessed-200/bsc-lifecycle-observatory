@@ -5,10 +5,10 @@ Con 24 horas de cadena verificadas: 8585.
 Ya tienen edad de 24 horas: 10258.
 Huecos de cadena: no detectados en los tramos auditados.
 Huecos de precios/otros proveedores: no cuantificados por token; no se suponen completos.
-Errores nuevos: {"cycle_failure": 24, "session_failure": 2, "http_500": 1}.
-Cambios de calidad: {"cycle_read_failure": 24, "negative_event_balance": 2636}.
+Errores nuevos: {"cycle_failure": 24, "http_500": 1, "session_failure": 2, "http_403": 10}.
+Cambios de calidad: {"cycle_read_failure": 24, "negative_event_balance": 2636, "gmgn_activity_read_failure": 198, "gmgn_early_read_failure": 46, "security_token_missing": 1}.
 GMGN/Ave: ave_early=OK, gmgn_early=UNAVAILABLE.
 Los balances negativos de Transfer son reconstrucciones incompletas, no pérdidas de una billetera.
 Aptitud para estrategias: no verificada. No se calcularon ganancias ni se abrió el bloque ciego.
 Billetera desconectada. Cero transacciones autorizadas.
-Avisos: Sin archivo nuevo en más de 30 minutos; La lectura del protocolo está retrasada más de 20 minutos o no consta; Hay grupos de tokens/pools con más de 30 minutos de retraso o sin tramo confirmado; La última sesión informó un fallo; Alguna fuente de compradores tempranos está inaccesible; Aumentaron errores de lectura o interpretación.
+Avisos: La lectura del protocolo está retrasada más de 20 minutos o no consta; Hay grupos de tokens/pools con más de 30 minutos de retraso o sin tramo confirmado; Alguna fuente de compradores tempranos está inaccesible; Aumentaron errores de lectura o interpretación.
