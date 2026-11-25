@@ -1,14 +1,14 @@
-BSC · Informe 2026-11-24 · hora de Cuba
+BSC · Informe 2026-11-25 · hora de Cuba
 Estado: REQUIERE_REVISION.
 Tokens observados: 15164; nacimientos capturados: 10258.
-Con 24 horas de cadena verificadas: 8585.
+Con 24 horas de cadena verificadas: no verificable.
 Ya tienen edad de 24 horas: 10258.
-Huecos de cadena: no detectados en los tramos auditados.
+Huecos de cadena: requieren revisión; ver detalles.
 Huecos de precios/otros proveedores: no cuantificados por token; no se suponen completos.
-Errores nuevos: {"http_403": 10}.
-Cambios de calidad: {"gmgn_activity_read_failure": 198, "gmgn_early_read_failure": 46, "security_token_missing": 1}.
+Errores nuevos: {"http_403": 20, "http_failure": 6, "cycle_failure": 32, "http_500": 26}.
+Cambios de calidad: {"cycle_read_failure": 32, "gmgn_activity_read_failure": 474, "gmgn_early_read_failure": 113, "security_token_missing": 12}.
 GMGN/Ave: ave_early=OK, gmgn_early=UNAVAILABLE.
 Los balances negativos de Transfer son reconstrucciones incompletas, no pérdidas de una billetera.
 Aptitud para estrategias: no verificada. No se calcularon ganancias ni se abrió el bloque ciego.
 Billetera desconectada. Cero transacciones autorizadas.
-Avisos: La lectura del protocolo está retrasada más de 20 minutos o no consta; Hay grupos de tokens/pools con más de 30 minutos de retraso o sin tramo confirmado; Alguna fuente de compradores tempranos está inaccesible; Aumentaron errores de lectura o interpretación.
+Avisos: La lectura del protocolo está retrasada más de 20 minutos o no consta; Hay grupos de tokens/pools con más de 30 minutos de retraso o sin tramo confirmado; Continuidad histórica no verificada; no declarar historias completas; Alguna fuente de compradores tempranos está inaccesible; Aumentaron errores de lectura o interpretación.
