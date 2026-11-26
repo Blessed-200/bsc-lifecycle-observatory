@@ -1,14 +1,14 @@
 BSC · Informe 2026-11-25 · hora de Cuba
 Estado: REQUIERE_REVISION.
-Tokens observados: 15164; nacimientos capturados: 10258.
+Tokens observados: 17044; nacimientos capturados: 11200.
 Con 24 horas de cadena verificadas: no verificable.
-Ya tienen edad de 24 horas: 10258.
+Ya tienen edad de 24 horas: 11073.
 Huecos de cadena: requieren revisión; ver detalles.
 Huecos de precios/otros proveedores: no cuantificados por token; no se suponen completos.
-Errores nuevos: {"http_403": 20, "http_failure": 6, "cycle_failure": 32, "http_500": 26}.
-Cambios de calidad: {"cycle_read_failure": 32, "gmgn_activity_read_failure": 474, "gmgn_early_read_failure": 113, "security_token_missing": 12}.
+Errores nuevos: {"cycle_failure": 47, "http_403": 28, "http_500": 28, "http_failure": 7, "session_failure": 2}.
+Cambios de calidad: {"cycle_read_failure": 47, "gmgn_activity_read_failure": 712, "gmgn_early_read_failure": 169, "security_token_missing": 16, "negative_event_balance": 3359}.
 GMGN/Ave: ave_early=OK, gmgn_early=UNAVAILABLE.
 Los balances negativos de Transfer son reconstrucciones incompletas, no pérdidas de una billetera.
 Aptitud para estrategias: no verificada. No se calcularon ganancias ni se abrió el bloque ciego.
 Billetera desconectada. Cero transacciones autorizadas.
-Avisos: La lectura del protocolo está retrasada más de 20 minutos o no consta; Hay grupos de tokens/pools con más de 30 minutos de retraso o sin tramo confirmado; Continuidad histórica no verificada; no declarar historias completas; Alguna fuente de compradores tempranos está inaccesible; Aumentaron errores de lectura o interpretación.
+Avisos: Sin archivo nuevo en más de 30 minutos; La lectura del protocolo está retrasada más de 20 minutos o no consta; Hay grupos de tokens/pools con más de 30 minutos de retraso o sin tramo confirmado; Continuidad histórica no verificada; no declarar historias completas; La última sesión informó un fallo; Alguna fuente de compradores tempranos está inaccesible; Aumentaron errores de lectura o interpretación.
